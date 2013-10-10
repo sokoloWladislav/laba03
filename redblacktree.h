@@ -21,13 +21,16 @@ class RedBlackTree
     node *Nil;
     void left_Rotate(node *x);
     void right_Rotate(node *x);
-    void insertFixup(node *x);
+    void insertFixup(node *z);
     void del_RBtree(node *nd);
+    RedBlackTree(const RedBlackTree& other);
+    node *findElement(node *root, Data x);
 public:
     RedBlackTree();
     RedBlackTree(Data x);
     ~RedBlackTree();
-    RedBlackTree(const RedBlackTree& other);
+    void insertElement(Data d);
+    bool isFinded(Data x);
     node *getRoot()
     {
         return root;

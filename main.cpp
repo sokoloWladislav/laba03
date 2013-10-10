@@ -5,6 +5,5 @@ using namespace std;
 
 int main()
 {
-    RedBlackTree a(2);
     return 0;
 }

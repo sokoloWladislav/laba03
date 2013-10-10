@@ -84,8 +84,106 @@ void RedBlackTree::right_Rotate(node *x)
         x->parent=y;
 }
 
-void RedBlackTree::insertFixup(node *x)
+void RedBlackTree::insertFixup(node *z)
 {
-    while(x->parent->color==red)
+    node *y=Nil;
+    while(z->parent->color==red)
+    {
+        if(z->parent==z->parent->parent->left)
+        {
+            y=z->parent->parent->right;
+            if(y->color==red)
+            {
+                y->color=black;
+                z->parent->color=black;
+                z->parent->parent->color=red;
+                z=z->parent->parent;
+            }
+            else
+            {
+                if(z==z->parent->right)
+                {
+                    z=z->parent;
+                    left_Rotate(z);
+                }
+                z->parent->color=black;
+                z->parent->parent->color=red;
+                right_Rotate(z->parent->parent);
+            }
+        }
+        else
+        {
+            y=z->parent->parent->left;
+            if(y->color==red)
+            {
+                y->color=black;
+                z->parent->color=black;
+                z->parent->parent->color=red;
+                z=z->parent->parent;
+            }
+            else
+            {
+                if(z==z->parent->left)
+                {
+                    z=z->parent;
+                    right_Rotate(z);
+                }
+                z->parent->color=black;
+                z->parent->parent->color=red;
+                left_Rotate(z->parent->parent);
+            }
+        }
+    }
+    root->color=black;
+}
 
+void RedBlackTree::insertElement(Data d)
+{
+    node *z=new node;
+    z->element=d;
+    node *y=Nil;
+    node *x=root;
+    while(x!=Nil)
+    {
+        y=x;
+        if(z->element<x->element)
+            x=x->left;
+        else
+            x=x->right;
+    }
+    z->parent=y;
+    if(y==Nil)
+        root=z;
+    else if(z->element<y->element)
+        z=y->left;
+    else
+        z=y->right;
+    z->left=Nil;
+    z->right=Nil;
+    z->color=red;
+    insertFixup(z);
+}
+
+RedBlackTree::node *RedBlackTree::findElement(node *root, Data x)
+{
+    node *temp=root;
+    if(temp!=Nil)
+    {
+        if(temp->element<x)
+            return findElement(root->left,x);
+        if(temp->element>x)
+            return findElement(root->right,x);
+        if(temp->element==x)
+            return temp;
+    }
+    else
+        return Nil;
+}
+
+bool RedBlackTree::isFinded(Data x)
+{
+    if(findElement(root, x)==Nil)
+        return false;
+    else
+        return true;
 }
