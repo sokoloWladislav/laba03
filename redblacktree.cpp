@@ -4,8 +4,8 @@ RedBlackTree::RedBlackTree()
 {
     Nil=new node;
     Nil->color=black;
-    Nil->left=Nil;
-    Nil->right=Nil;
+    Nil->left=0;
+    Nil->right=0;
     Nil->parent=0;
     Nil->element=0;
     root=Nil;
@@ -48,40 +48,53 @@ RedBlackTree::RedBlackTree(const RedBlackTree& other)
 
 void RedBlackTree::left_Rotate(node *x)
 {
-    node *y=x->right;
-    x->right=y->left;
-    if(y->left!=Nil)
-        y->left->parent=x;
-    if(y!=Nil)
+    if(x->right!=Nil)
+    {
+        node *y=x->right;
+        x->right=y->left;
+        if(y->left!=Nil)
+            y->left->parent=x;
         y->parent=x->parent;
-    if(x->parent==Nil)
-        y=root;
-    else if(x==x->parent->left)
-        x->parent->left=y;
-    else
-        x->parent->right=y;
-    y->left=x;
-    if(x!=Nil)
-        x->parent=y;
+        if(x->parent==Nil)
+            y=root;
+        else
+        {
+            if(x==x->parent->left)
+                x->parent->left=y;
+            else
+                x->parent->right=y;
+        }
+        y->left=x;
+        if(x!=Nil)
+            x->parent=y;
+        y=0;
+    }
 }
 
 void RedBlackTree::right_Rotate(node *x)
 {
-    node *y=x->left;
-    x->left=y->right;
-    if(y->right!=Nil)
-        y->right->parent=x;
-    if(y!=Nil)
-        y->parent=x->parent;
-    if(x->parent==Nil)
-        y=root;
-    else if(x==x->parent->left)
-        x->parent->left=y;
-    else
-        x->parent->right=y;
-    y->right=x;
-    if(x!=Nil)
-        x->parent=y;
+    if(x->left!=Nil)
+    {
+        node *y=x->left;
+        x->left=y->right;
+        if(y->right!=Nil)
+            y->right->parent=x;
+        if(y!=Nil)
+            y->parent=x->parent;
+        if(x->parent==Nil)
+            y=root;
+        else
+        {
+            if(x==x->parent->left)
+                x->parent->left=y;
+            else
+                x->parent->right=y;
+        }
+        y->right=x;
+        if(x!=Nil)
+            x->parent=y;
+        y=0;
+    }
 }
 
 void RedBlackTree::insertFixup(node *z)
@@ -108,7 +121,7 @@ void RedBlackTree::insertFixup(node *z)
                 }
                 z->parent->color=black;
                 z->parent->parent->color=red;
-                right_Rotate(z->parent->parent);
+                //right_Rotate(z->parent->parent);
             }
         }
         else
@@ -135,6 +148,7 @@ void RedBlackTree::insertFixup(node *z)
         }
     }
     root->color=black;
+    y=0;
 }
 
 void RedBlackTree::insertElement(Data d)
@@ -154,30 +168,28 @@ void RedBlackTree::insertElement(Data d)
     z->parent=y;
     if(y==Nil)
         root=z;
-    else if(z->element<y->element)
-        z=y->left;
     else
-        z=y->right;
+    {
+        if(z->element<y->element)
+            y->left=z;
+        else
+            y->right=z;
+    }
     z->left=Nil;
     z->right=Nil;
     z->color=red;
+    y=0;
+    x=0;
     insertFixup(z);
+    z=0;
 }
 
-RedBlackTree::node *RedBlackTree::findElement(node *root, Data x)
+RedBlackTree::node *RedBlackTree::findElement(node *t, Data x)
 {
-    node *temp=root;
-    if(temp!=Nil)
-    {
-        if(temp->element<x)
-            return findElement(root->left,x);
-        if(temp->element>x)
-            return findElement(root->right,x);
-        if(temp->element==x)
-            return temp;
-    }
-    else
-        return Nil;
+    if(t==Nil) return Nil;
+    if(x<t->element) return findElement(t->left,x);
+    if(x>t->element) return findElement(t->right,x);
+    return t;
 }
 
 bool RedBlackTree::isFinded(Data x)
