@@ -1,16 +1,29 @@
 #include <iostream>
 #include "redblacktree.h"
+#include <exception>
 
 using namespace std;
 
 int main()
 {
-    RedBlackTree A,B(5);
+    try
+    {
+    RedBlackTree A, B ,C;
     A.insertElement(3);
-    A.insertElement(4);
-    //A.insertElement(-5);
     A.insertElement(5);
-    //A.insertElement(6);
-    //cout << A.isFinded(8);
+    A.insertElement(-5);
+    A.insertElement(1);
+    A.insertElement(6);
+    B.insertElement(-5);
+    B.insertElement(1);
+    cout << A.isFinded(6) << endl;
+    cout << A.getNumberOfElements() << endl;
+    cout << C.getNumberOfElements() << endl;
+    }
+
+    catch (exception &e)
+    {
+        cerr<<e.what();
+    }
     return 0;
 }

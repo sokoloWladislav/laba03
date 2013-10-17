@@ -9,6 +9,7 @@ RedBlackTree::RedBlackTree()
     Nil->parent=0;
     Nil->element=0;
     root=Nil;
+    numberOfElements=0;
 }
 
 RedBlackTree::RedBlackTree(Data x)
@@ -24,12 +25,14 @@ RedBlackTree::RedBlackTree(Data x)
     root->parent=Nil;
     root->color=black;
     root->element=x;
+    numberOfElements=1;
 }
 
 RedBlackTree::~RedBlackTree()
 {
     del_RBtree(root);
     Nil=0;
+    numberOfElements=0;
 }
 
 void RedBlackTree::del_RBtree(node *nd)
@@ -56,7 +59,7 @@ void RedBlackTree::left_Rotate(node *x)
             y->left->parent=x;
         y->parent=x->parent;
         if(x->parent==Nil)
-            y=root;
+            root=y;
         else
         {
             if(x==x->parent->left)
@@ -82,7 +85,7 @@ void RedBlackTree::right_Rotate(node *x)
         if(y!=Nil)
             y->parent=x->parent;
         if(x->parent==Nil)
-            y=root;
+            root=y;
         else
         {
             if(x==x->parent->left)
@@ -121,7 +124,7 @@ void RedBlackTree::insertFixup(node *z)
                 }
                 z->parent->color=black;
                 z->parent->parent->color=red;
-                //right_Rotate(z->parent->parent);
+                right_Rotate(z->parent->parent);
             }
         }
         else
@@ -162,26 +165,32 @@ void RedBlackTree::insertElement(Data d)
         y=x;
         if(z->element<x->element)
             x=x->left;
-        else
+        if(z->element>x->element)
             x=x->right;
+        if(z->element==x->element)
+            delete z;
     }
-    z->parent=y;
-    if(y==Nil)
-        root=z;
-    else
+    if(z->element!=x->element)
     {
-        if(z->element<y->element)
-            y->left=z;
+        z->parent=y;
+        if(y==Nil)
+            root=z;
         else
-            y->right=z;
+        {
+            if(z->element<y->element)
+                y->left=z;
+            else
+                y->right=z;
+        }
+        z->left=Nil;
+        z->right=Nil;
+        z->color=red;
+        y=0;
+        x=0;
+        insertFixup(z);
+        z=0;
+        ++numberOfElements;
     }
-    z->left=Nil;
-    z->right=Nil;
-    z->color=red;
-    y=0;
-    x=0;
-    insertFixup(z);
-    z=0;
 }
 
 RedBlackTree::node *RedBlackTree::findElement(node *t, Data x)
@@ -198,4 +207,68 @@ bool RedBlackTree::isFinded(Data x)
         return false;
     else
         return true;
+}
+
+Data RedBlackTree::findMinimal()
+{
+    node *y=root;
+    if(y==Nil)
+        throw minimumE();
+    else
+    {
+        while(y->left!=Nil)
+            y=y->left;
+        return y->element;
+    }
+}
+
+void RedBlackTree::conji(node *p, RedBlackTree Y, RedBlackTree &Z)
+{
+    if(p!=Nil)
+    {
+        conji(p->left, Y, Z);
+        if(Y.isFinded(p->element))
+            Z.insertElement(p->element);
+        conji(p->right, Y, Z);
+    }
+}
+
+void RedBlackTree::differ(node *p, RedBlackTree Y, RedBlackTree &Z)
+{
+    if(p!=Nil)
+    {
+        differ(p->left, Y, Z);
+        if(!Y.isFinded(p->element))
+            Z.insertElement(p->element);
+        differ(p->right, Y, Z);
+    }
+}
+
+void RedBlackTree::disji(node *p, RedBlackTree &Z)
+{
+    disji(p->left, Z);
+    Z.insertElement(p->element);
+    disji(p->right, Z);
+}
+
+RedBlackTree RedBlackTree::conjunction(RedBlackTree X, RedBlackTree Y)
+{
+    RedBlackTree Z;
+    X.conji(root, Y, Z);
+    return Z;
+}
+
+RedBlackTree RedBlackTree::difference(RedBlackTree X, RedBlackTree Y)
+{
+    RedBlackTree Z;
+    X.differ(root, Y, Z);
+    return Z;
+}
+
+RedBlackTree RedBlackTree::disjunction(RedBlackTree X, RedBlackTree Y)
+{
+    RedBlackTree Z;
+    X.disji(root, Z);
+    Y.disji(root, Z);
+    return Z;
 }
