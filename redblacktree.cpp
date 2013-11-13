@@ -1,4 +1,8 @@
 #include "redblacktree.h"
+#include <iostream>
+
+using namespace std;
+
 
 RedBlackTree::RedBlackTree()
 {
@@ -7,7 +11,6 @@ RedBlackTree::RedBlackTree()
     Nil->left=0;
     Nil->right=0;
     Nil->parent=0;
-    Nil->element=0;
     root=Nil;
     numberOfElements=0;
 }
@@ -44,9 +47,31 @@ void RedBlackTree::del_RBtree(node *nd)
     nd=0;
 }
 
+void RedBlackTree::copy_RBtree(node *&newn,node *old, node *newNil, node *oldNil)
+{
+    if(old==oldNil)
+    {
+        newn=newNil;
+        return;
+    }
+    newn=new node;
+    newn->element=old->element;
+    copy_RBtree(newn->left,old->left, newNil, oldNil);
+    copy_RBtree(newn->right,old->right, newNil, oldNil);
+}
+
 RedBlackTree::RedBlackTree(const RedBlackTree& other)
 {
-    //copy ctor
+    copy_RBtree(root,other.root,Nil, other.Nil);
+}
+
+RedBlackTree& RedBlackTree::operator = (const RedBlackTree &t)
+{
+
+    if(this==&t) return *this;
+    del_RBtree(root);
+    copy_RBtree(root, t.root, Nil, t.Nil);
+    return *this;
 }
 
 void RedBlackTree::left_Rotate(node *x)
@@ -162,16 +187,18 @@ void RedBlackTree::insertElement(Data d)
     node *x=root;
     while(x!=Nil)
     {
+        cout << "q ";
         y=x;
         if(z->element<x->element)
             x=x->left;
         if(z->element>x->element)
             x=x->right;
-        if(z->element==x->element)
-            delete z;
     }
-    if(z->element!=x->element)
+
+
+    if(z->element!=y->element)
     {
+        cout << "w ";
         z->parent=y;
         if(y==Nil)
             root=z;
@@ -179,15 +206,16 @@ void RedBlackTree::insertElement(Data d)
         {
             if(z->element<y->element)
                 y->left=z;
-            else
+            if(z->element>y->element)
                 y->right=z;
         }
+
         z->left=Nil;
         z->right=Nil;
         z->color=red;
         y=0;
         x=0;
-        insertFixup(z);
+        //insertFixup(z);
         z=0;
         ++numberOfElements;
     }
@@ -222,53 +250,74 @@ Data RedBlackTree::findMinimal()
     }
 }
 
-void RedBlackTree::conji(node *p, RedBlackTree Y, RedBlackTree &Z)
+RedBlackTree RedBlackTree::operator +(RedBlackTree &x)
+{
+    RedBlackTree z=x;
+    conjunction(root, z);
+    return z;
+}
+
+void RedBlackTree::conjunction(node *p, RedBlackTree &x)
 {
     if(p!=Nil)
     {
-        conji(p->left, Y, Z);
-        if(Y.isFinded(p->element))
-            Z.insertElement(p->element);
-        conji(p->right, Y, Z);
+        conjunction(p->left, x);
+        if(!x.isFinded(p->element))
+            x.insertElement(p->element);
+        conjunction(p->right, x);
     }
 }
 
-void RedBlackTree::differ(node *p, RedBlackTree Y, RedBlackTree &Z)
+
+RedBlackTree RedBlackTree::operator -(RedBlackTree &x)
+{
+    RedBlackTree z;
+    difference(root, z, x);
+    return z;
+}
+
+void RedBlackTree::difference(node *p, RedBlackTree &z, RedBlackTree x)
 {
     if(p!=Nil)
     {
-        differ(p->left, Y, Z);
-        if(!Y.isFinded(p->element))
-            Z.insertElement(p->element);
-        differ(p->right, Y, Z);
+        difference(p->left, z, x);
+        if(!x.isFinded(p->element))
+            z.insertElement(p->element);
+        difference(p->right, z, x);
     }
 }
 
-void RedBlackTree::disji(node *p, RedBlackTree &Z)
+
+void RedBlackTree::disjunction(node *p, RedBlackTree &z, RedBlackTree x)
 {
-    disji(p->left, Z);
-    Z.insertElement(p->element);
-    disji(p->right, Z);
+    if(p!=Nil)
+    {
+        disjunction(p->left, z, x);
+        if(x.isFinded(p->element))
+            z.insertElement(p->element);
+        disjunction(p->right, z, x);
+    }
 }
 
-RedBlackTree RedBlackTree::conjunction(RedBlackTree X, RedBlackTree Y)
+RedBlackTree RedBlackTree::disjunction(RedBlackTree x)
 {
-    RedBlackTree Z;
-    X.conji(root, Y, Z);
-    return Z;
+    RedBlackTree z;
+    disjunction(root, z, x);
+    return z;
 }
 
-RedBlackTree RedBlackTree::difference(RedBlackTree X, RedBlackTree Y)
+
+void RedBlackTree::output(node* nd)
 {
-    RedBlackTree Z;
-    X.differ(root, Y, Z);
-    return Z;
+    if(nd!=Nil)
+    {
+        output(nd->left);
+        cout << nd->element << ' ';
+        output(nd->right);
+    }
 }
 
-RedBlackTree RedBlackTree::disjunction(RedBlackTree X, RedBlackTree Y)
+void RedBlackTree::output()
 {
-    RedBlackTree Z;
-    X.disji(root, Z);
-    Y.disji(root, Z);
-    return Z;
+    output(root);
 }

@@ -3,13 +3,17 @@
 
 #include <exception>
 
-typedef double Data;
+
+typedef int Data;
 
 typedef enum nodecolor {red, black} nodecolor;
 
 class minimumE:public std::exception
 {
-    const char *what()const throw(){return "error find M_element in empty tree\n";}
+    const char *what()const throw()
+    {
+        return "error finding M_element in empty tree\n";
+    }
 };
 
 class RedBlackTree
@@ -28,25 +32,31 @@ class RedBlackTree
     void left_Rotate(node *x);
     void right_Rotate(node *x);
     void insertFixup(node *z);
+    void insertElement(node *&nd, Data d);
     void del_RBtree(node *nd);
-    RedBlackTree(const RedBlackTree& other);
+    void copy_RBtree(node *&newn,node *old, node *newNil, node *oldNil);
     node *findElement(node *root, Data x);
-    RedBlackTree& operator = (const RedBlackTree &t);
-    void conji(node *p, RedBlackTree Y, RedBlackTree &Z);
-    void differ(node *p, RedBlackTree Y, RedBlackTree &Z);
-    void disji(node *p, RedBlackTree &Z);
+    void conjunction(node *p, RedBlackTree &x);
+    void difference(node *p, RedBlackTree &z, RedBlackTree x);
+    void disjunction(node *p, RedBlackTree &z, RedBlackTree x);
+    void output(node *nd);
 public:
+    void output();
     RedBlackTree();
     RedBlackTree(Data x);
+    RedBlackTree(const RedBlackTree& other);
+    RedBlackTree& operator = (const RedBlackTree &t);
     ~RedBlackTree();
+    RedBlackTree operator + (RedBlackTree &x);
+    RedBlackTree operator - (RedBlackTree &x);
     void insertElement(Data d);
     bool isFinded(Data x);
     Data findMinimal();
-    node *getRoot(){return root;}
-    int getNumberOfElements(){return numberOfElements;}
-    RedBlackTree conjunction(RedBlackTree X, RedBlackTree Y);
-    RedBlackTree disjunction(RedBlackTree X, RedBlackTree Y);
-    RedBlackTree difference(RedBlackTree X, RedBlackTree Y);
+    RedBlackTree disjunction(RedBlackTree x);
+    int getNumberOfElements()
+    {
+        return numberOfElements;
+    }
 };
 
 #endif // REDBLACKTREE_H

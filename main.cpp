@@ -8,17 +8,19 @@ int main()
 {
     try
     {
-    RedBlackTree A, B ,C;
-    A.insertElement(3);
-    A.insertElement(5);
-    A.insertElement(-5);
-    A.insertElement(1);
-    A.insertElement(6);
-    B.insertElement(-5);
-    B.insertElement(1);
-    cout << A.isFinded(6) << endl;
-    cout << A.getNumberOfElements() << endl;
-    cout << C.getNumberOfElements() << endl;
+    RedBlackTree A(3), B(3), C;
+    A.insertElement(4);
+    //A.insertElement(3);
+    //A.insertElement(7);
+    //A.insertElement(3);
+    //A.insertElement(-1);
+    //A.insertElement(-2);
+    //B.insertElement(1);
+    //B.insertElement(-10);
+    cout << endl;
+    //cout << A.getNumberOfElements();
+    C=A.disjunction(B);
+    C.output();
     }
 
     catch (exception &e)
