@@ -40,6 +40,7 @@ class RedBlackTree
     void difference(node *p, RedBlackTree &z, RedBlackTree x);
     void disjunction(node *p, RedBlackTree &z, RedBlackTree x);
     void output(node *nd);
+    void insertElement(node *y, node *nd, Data d);
 public:
     void output();
     RedBlackTree();

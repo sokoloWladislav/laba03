@@ -179,46 +179,42 @@ void RedBlackTree::insertFixup(node *z)
     y=0;
 }
 
+void RedBlackTree::insertElement(node *y, node *nd, Data d)
+{
+    if(!isFinded(d))
+    {
+        if(nd==Nil)
+        {
+            nd=new node;
+            nd->element=d;
+            nd->color=red;
+            nd->left=nd->right=Nil;
+            nd->parent=y;
+            if(nd->parent==Nil)
+            {
+                root=nd;
+            }
+            else
+            {
+                if(nd->element<y->element)
+                    y->left=nd;
+                if(nd->element>y->element)
+                    y->right=nd;
+            }
+            insertFixup(nd);
+            ++numberOfElements;
+            return;
+        }
+        if(d<=nd->element) insertElement(nd, nd->left, d);
+        else insertElement(nd, nd->right, d);
+    }
+}
+
 void RedBlackTree::insertElement(Data d)
 {
-    node *z=new node;
-    z->element=d;
     node *y=Nil;
-    node *x=root;
-    while(x!=Nil)
-    {
-        cout << "q ";
-        y=x;
-        if(z->element<x->element)
-            x=x->left;
-        if(z->element>x->element)
-            x=x->right;
-    }
-
-
-    if(z->element!=y->element)
-    {
-        cout << "w ";
-        z->parent=y;
-        if(y==Nil)
-            root=z;
-        else
-        {
-            if(z->element<y->element)
-                y->left=z;
-            if(z->element>y->element)
-                y->right=z;
-        }
-
-        z->left=Nil;
-        z->right=Nil;
-        z->color=red;
-        y=0;
-        x=0;
-        //insertFixup(z);
-        z=0;
-        ++numberOfElements;
-    }
+    insertElement(y, root, d);
+    y=0;
 }
 
 RedBlackTree::node *RedBlackTree::findElement(node *t, Data x)
